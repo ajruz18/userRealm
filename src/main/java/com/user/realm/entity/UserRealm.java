@@ -5,22 +5,27 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-@XmlRootElement
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
+@JacksonXmlRootElement(localName = "realm")
 @Entity
-@Table(name = "realm", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
-public class Realm implements Serializable {
+@Table(name = "userRealm")
+public class UserRealm implements Serializable {
 
 	@Id
-    @GeneratedValue
-    private int id;
+	@SequenceGenerator(name = "USERREALM_ID_GENERATOR", sequenceName = "USERREALM_ID_SEQ")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USERREALM_ID_GENERATOR")
+	private int id;
 	
 	@NotEmpty
 	@Column(name="name", unique=true)
@@ -29,10 +34,10 @@ public class Realm implements Serializable {
 	private String key;
 	private String description;
 	
-	public Realm() {
+	public UserRealm() {
 	}
 	
-	public Realm(int id, String name, String key, String description) {
+	public UserRealm(int id, String name, String key, String description) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -44,12 +49,13 @@ public class Realm implements Serializable {
 		return id;
 	}
 
-	@XmlAttribute(name="id")
+	@JacksonXmlProperty(isAttribute = true, localName = "id")
 	public void setId(int id) {
 		this.id = id;
 	}
 
 	@XmlAttribute(name="name")
+	@JacksonXmlProperty(isAttribute = true, localName = "name")
 	public String getName() {
 		return name;
 	}

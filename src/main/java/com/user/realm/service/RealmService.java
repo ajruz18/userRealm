@@ -3,9 +3,12 @@ package com.user.realm.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.user.realm.entity.Realm;
+import com.user.realm.entity.UserRealm;
 import com.user.realm.repositories.RealmRepository;
 
 @Service
@@ -14,12 +17,15 @@ public class RealmService {
 	@Autowired
 	private RealmRepository realmRepository;
 	
-	public Realm addRealm(Realm realm) {
-		return realmRepository.save(realm);
+	@Transactional
+	@CachePut(cacheNames="userRealm")
+	public UserRealm addUserRealm(UserRealm userRealm) {
+		return realmRepository.save(userRealm);
 	}
 
-	public Realm getRealm(Integer id) {
-		Optional<Realm> optional = realmRepository.findById(id);
+	@Cacheable("userRealm")
+	public UserRealm getUserRealm(Integer id) {
+		Optional<UserRealm> optional = realmRepository.findById(id);
 		if(optional.isPresent())
 			return optional.get();
 		return null;

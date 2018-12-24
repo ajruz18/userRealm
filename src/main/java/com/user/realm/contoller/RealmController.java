@@ -1,11 +1,13 @@
 package com.user.realm.contoller;
 
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
@@ -21,57 +23,53 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.user.realm.entity.Realm;
+import com.user.realm.entity.UserRealm;
 import com.user.realm.service.RealmService;
 import com.user.realm.util.RealmUtil;
+import com.user.realm.validator.Error;
 
 @RestController
 @RequestMapping("/user")
 public class RealmController {
 
+	private static Logger log = Logger.getLogger(RealmController.class.getName());
+	
     @Autowired
     private RealmService realmService;
 
-	@PostMapping(value = "/realm")
-	public ResponseEntity<Realm> setRealm(@Validated(Realm.New.class) @RequestBody Realm realm) {
-		
+	@PostMapping(value = "/realm"
+			, consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+			, produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+	)
+	public ResponseEntity<UserRealm> setXMLRealm(@Validated(UserRealm.New.class) @RequestBody UserRealm userRealm) {
+
 		try {
-			realm.setKey(RealmUtil.generateRandomString());
-			realm = realmService.addRealm(realm);
+			userRealm.setKey(RealmUtil.generateRandomString());
+			userRealm = realmService.addUserRealm(userRealm);
+		
 		} catch (DataIntegrityViolationException ex){
-			return new ResponseEntity(generateMessage("Request processing failed; nested exception is org.springframework.dao.DataIntegrityViolationException"), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity(new Error("DuplicateRealmName"), HttpStatus.BAD_REQUEST);
 		} catch(Exception e) {
-			return new ResponseEntity(generateMessage("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity(new Error("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		return new ResponseEntity<Realm>(realm, HttpStatus.CREATED);
+		return new ResponseEntity(userRealm, HttpStatus.CREATED);
 	}
 
-	@GetMapping(value={"/realm", "/realm/{id}"})
-	public ResponseEntity getRealm(@PathVariable(value = "id") Optional<Integer> id) {
+	@GetMapping(value={"/realm", "/realm/{id}"}
+	, produces= {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+	)
+	public ResponseEntity<UserRealm> getJSONRealm(@PathVariable(value = "id") Optional<Integer> id) {
 		
 		if (!id.isPresent()) {
-			return new ResponseEntity(generateMessage("InvalidArgument"), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity(new Error("InvalidArgument"), HttpStatus.BAD_REQUEST);
 		}
-		Realm realm = realmService.getRealm(id.get());
-		if(realm == null) {
-			return new ResponseEntity(generateMessage("RealmNotFound"), HttpStatus.NOT_FOUND);
+		UserRealm userRealm = realmService.getUserRealm(id.get());
+		if(userRealm == null) {
+			return new ResponseEntity(new Error("RealmNotFound"), HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity(realm, HttpStatus.OK);
+		return new ResponseEntity(userRealm, HttpStatus.OK);
 	}
-
-//	@GetMapping(value={"/realm", "/realm/{id}"})
-//	public ResponseEntity getRealm(@PathVariable Map<String, Integer> pathVariables) {
-//		if (!pathVariables.containsKey("id")){
-//			return new ResponseEntity(generateMessage("InvalidArgument"), HttpStatus.BAD_REQUEST);
-//	    } else {
-//	  		Realm realm = realmService.getRealm(pathVariables.get("id"));
-//			if(realm == null) {
-//				return new ResponseEntity(generateMessage("RealmNotFound"), HttpStatus.NOT_FOUND);
-//			}
-//			return new ResponseEntity(realm, HttpStatus.OK);
-//	    }
-//	}
 
 	@Autowired
 	@Qualifier("realmValidator")
@@ -84,13 +82,9 @@ public class RealmController {
 	
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public String handleException(MethodArgumentNotValidException exception) {
+	public Error handleException(MethodArgumentNotValidException exception) {
 	    String errorCode = exception.getBindingResult().getFieldError().getCode();
-	    return generateMessage(errorCode);
+	    return new Error(errorCode);
 	}
 
-	private String generateMessage(String errorCode) {
-		return "<error><code>" + errorCode + "</code></error>";
-	}	
-	
 }

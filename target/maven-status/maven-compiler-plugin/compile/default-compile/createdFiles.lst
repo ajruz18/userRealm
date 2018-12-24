@@ -1,0 +1,12 @@
+com\user\realm\config\ApplicationConfiguration.class
+com\user\realm\contoller\RealmController.class
+com\user\realm\validator\Error.class
+com\user\realm\entity\UserRealm$Existing.class
+com\user\realm\entity\UserRealm$New.class
+com\user\realm\config\ApplicationInitializer.class
+com\user\realm\entity\UserRealm.class
+com\user\realm\service\RealmService.class
+com\user\realm\repositories\RealmRepository.class
+com\user\realm\util\RealmUtil.class
+com\user\realm\validator\RealmValidator.class
+com\user\realm\config\JPAConfig.class

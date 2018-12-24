@@ -8,8 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
@@ -32,6 +37,11 @@ public class JPAConfig {
 	    dataSource.setUrl("jdbc:h2:file:~/tmp/realmDb;AUTO_SERVER=TRUE");
 	    dataSource.setUsername("sa");
 	    dataSource.setPassword("");
+	    
+	    Resource initSchema = new ClassPathResource("scripts/schema-h2.sql");
+	    DatabasePopulator databasePopulator = new ResourceDatabasePopulator(initSchema);
+	    DatabasePopulatorUtils.execute(databasePopulator, dataSource);
+
 	    return dataSource;
 	}
 	
@@ -47,7 +57,7 @@ public class JPAConfig {
         properties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         properties.put("hibernate.show_sql", "true");
         properties.put("hibernate.format_sql", "true");
-        properties.put("hibernate.id.new_generator_mappings", "false");
+        properties.put("hibernate.id.new_generator_mappings", "true");
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setDataSource(getDataSource());
