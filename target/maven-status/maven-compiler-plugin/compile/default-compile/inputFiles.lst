@@ -1,9 +1,9 @@
 C:\Users\ilici\workspaces\stestboot\realm\src\main\java\com\user\realm\validator\RealmValidator.java
-C:\Users\ilici\workspaces\stestboot\realm\src\main\java\com\user\realm\contoller\RealmController.java
 C:\Users\ilici\workspaces\stestboot\realm\src\main\java\com\user\realm\entity\UserRealm.java
 C:\Users\ilici\workspaces\stestboot\realm\src\main\java\com\user\realm\validator\Error.java
 C:\Users\ilici\workspaces\stestboot\realm\src\main\java\com\user\realm\repositories\RealmRepository.java
 C:\Users\ilici\workspaces\stestboot\realm\src\main\java\com\user\realm\service\RealmService.java
+C:\Users\ilici\workspaces\stestboot\realm\src\main\java\com\user\realm\controller\RealmController.java
 C:\Users\ilici\workspaces\stestboot\realm\src\main\java\com\user\realm\config\ApplicationInitializer.java
 C:\Users\ilici\workspaces\stestboot\realm\src\main\java\com\user\realm\config\JPAConfig.java
 C:\Users\ilici\workspaces\stestboot\realm\src\main\java\com\user\realm\util\RealmUtil.java

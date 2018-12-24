@@ -1,5 +1,5 @@
 com\user\realm\config\ApplicationConfiguration.class
-com\user\realm\contoller\RealmController.class
+com\user\realm\controller\RealmController.class
 com\user\realm\validator\Error.class
 com\user\realm\entity\UserRealm$Existing.class
 com\user\realm\entity\UserRealm$New.class
